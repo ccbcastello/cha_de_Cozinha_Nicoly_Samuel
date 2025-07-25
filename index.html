@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Lista da Festa</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 2rem;
+      background: #f8f8f8;
+    }
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+      max-width: 500px;
+      margin: 2rem auto;
+    }
+    li {
+      background: #fff;
+      padding: 1rem;
+      margin: 0.5rem 0;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    li.chosen {
+      text-decoration: line-through;
+      color: #999;
+      background-color: #eee;
+    }
+    button {
+      padding: 0.4rem 0.8rem;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    button:disabled {
+      background-color: #aaa;
+      cursor: not-allowed;
+    }
+    span.name {
+      font-size: 0.9em;
+      color: #555;
+      margin-left: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>Escolha um item para levar</h1>
+  <ul id="item-list">
+    <li data-item="Refrigerante">Refrigerante <button onclick="chooseItem(this)">Escolher</button></li>
+    <li data-item="Salgadinhos">Salgadinhos <button onclick="chooseItem(this)">Escolher</button></li>
+    <li data-item="Pratos descartáveis">Pratos descartáveis <button onclick="chooseItem(this)">Escolher</button></li>
+    <li data-item="Guardanapos">Guardanapos <button onclick="chooseItem(this)">Escolher</button></li>
+    <li data-item="Doce caseiro">Doce caseiro <button onclick="chooseItem(this)">Escolher</button></li>
+  </ul>
+
+  <script>
+    function chooseItem(button) {
+      const li = button.parentElement;
+      const itemName = li.dataset.item;
+      const name = prompt(`Digite seu nome para confirmar que levará "${itemName}":`);
+      if (!name) return;
+
+      // Marcar como escolhido
+      li.classList.add("chosen");
+      li.innerHTML = `${itemName} <span class="name">(${name})</span>`;
+    }
+  </script>
+</body>
+</html>
