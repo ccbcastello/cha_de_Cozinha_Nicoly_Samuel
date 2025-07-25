@@ -3,118 +3,109 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Lista da Festa 🎉</title>
+  <title>Lista da Festa com Firebase</title>
   <style>
-    * {
-      box-sizing: border-box;
-    }
-
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      margin: 0;
-      padding: 0;
-      background: #f1f1f1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-height: 100vh;
-    }
-
-    header {
-      background-color: #4CAF50;
-      color: white;
-      width: 100%;
+      font-family: Arial, sans-serif;
+      background: #f7f7f7;
       padding: 1rem;
       text-align: center;
-      font-size: 1.5rem;
     }
-
-    main {
-      width: 100%;
-      max-width: 600px;
-      padding: 1rem;
+    h1 {
+      color: #4CAF50;
     }
-
     ul {
-      list-style: none;
+      max-width: 500px;
+      margin: 2rem auto;
       padding: 0;
-      margin-top: 2rem;
+      list-style: none;
     }
-
     li {
-      background: white;
-      padding: 1rem;
+      background: #fff;
       margin-bottom: 1rem;
+      padding: 1rem;
       border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
       display: flex;
       justify-content: space-between;
       align-items: center;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-      transition: 0.2s;
     }
-
     li.chosen {
       background-color: #ddd;
       text-decoration: line-through;
       color: #777;
     }
-
     button {
       background-color: #4CAF50;
-      border: none;
       color: white;
-      padding: 0.5rem 0.8rem;
+      border: none;
+      padding: 0.5rem 1rem;
       border-radius: 6px;
       cursor: pointer;
-      font-size: 0.9rem;
     }
-
     button:disabled {
       background-color: #999;
-      cursor: not-allowed;
     }
-
-    span.name {
+    .name {
       font-size: 0.9rem;
-      color: #444;
-      margin-left: 1rem;
-    }
-
-    @media (max-width: 500px) {
-      li {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-
-      button {
-        margin-top: 0.5rem;
-        width: 100%;
-      }
+      color: #333;
+      margin-left: 10px;
     }
   </style>
 </head>
 <body>
-  <header>Lista da Festa 🎉</header>
-  <main>
-    <p>Escolha um item para levar. Após a escolha, ele ficará marcado e não poderá ser selecionado novamente.</p>
-    <ul id="item-list">
-      <li data-item="Refrigerante">Refrigerante <button onclick="chooseItem(this)">Escolher</button></li>
-      <li data-item="Salgadinhos">Salgadinhos <button onclick="chooseItem(this)">Escolher</button></li>
-      <li data-item="Pratos descartáveis">Pratos descartáveis <button onclick="chooseItem(this)">Escolher</button></li>
-      <li data-item="Guardanapos">Guardanapos <button onclick="chooseItem(this)">Escolher</button></li>
-      <li data-item="Doce caseiro">Doce caseiro <button onclick="chooseItem(this)">Escolher</button></li>
-    </ul>
-  </main>
+  <h1>Lista da Festa 🎉</h1>
+  <ul id="item-list"></ul>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
 
   <script>
-    function chooseItem(button) {
-      const li = button.parentElement;
-      const itemName = li.dataset.item;
-      const name = prompt(`Digite seu nome para confirmar que levará "${itemName}":`);
-      if (!name) return;
+    // 🔁 Cole aqui suas credenciais do Firebase (Configuração do projeto > SDK Web)
+    const firebaseConfig = {
+      apiKey: "SUA_API_KEY",
+      authDomain: "SEU_PROJETO.firebaseapp.com",
+      databaseURL: "https://SEU_PROJETO.firebaseio.com",
+      projectId: "SEU_PROJETO",
+      storageBucket: "SEU_PROJETO.appspot.com",
+      messagingSenderId: "XXXXXXX",
+      appId: "APP_ID"
+    };
 
-      li.classList.add("chosen");
-      li.innerHTML = `${itemName} <span class="name">(${name})</span>`;
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    const itemList = document.getElementById("item-list");
+
+    // 🔰 Itens iniciais da festa
+    const defaultItems = [
+      "Refrigerante", "Salgadinhos", "Pratos descartáveis", "Guardanapos", "Doce caseiro"
+    ];
+
+    // 🔄 Atualiza lista ao vivo
+    db.ref("itens").on("value", (snapshot) => {
+      const data = snapshot.val() || {};
+      itemList.innerHTML = "";
+      defaultItems.forEach(item => {
+        const li = document.createElement("li");
+        const escolhido = data[item];
+
+        if (escolhido) {
+          li.className = "chosen";
+          li.textContent = `${item} (por ${escolhido})`;
+        } else {
+          li.innerHTML = `${item} <button onclick="escolher('${item}')">Escolher</button>`;
+        }
+        itemList.appendChild(li);
+      });
+    });
+
+    // ✅ Escolha de item
+    function escolher(item) {
+      const nome = prompt(`Digite seu nome para confirmar que levará "${item}":`);
+      if (!nome) return;
+
+      db.ref(`itens/${item}`).set(nome);
     }
   </script>
 </body>
