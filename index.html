@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Lista da Festa com Firebase</title>
+  <title>Lista da Festa 🎉</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -11,9 +11,7 @@
       padding: 1rem;
       text-align: center;
     }
-    h1 {
-      color: #4CAF50;
-    }
+    h1 { color: #4CAF50; }
     ul {
       max-width: 500px;
       margin: 2rem auto;
@@ -57,56 +55,42 @@
   <h1>Lista da Festa 🎉</h1>
   <ul id="item-list"></ul>
 
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
-
   <script>
-    // 🔁 Cole aqui suas credenciais do Firebase (Configuração do projeto > SDK Web)
-    const firebaseConfig = {
-      apiKey: "SUA_API_KEY",
-      authDomain: "SEU_PROJETO.firebaseapp.com",
-      databaseURL: "https://SEU_PROJETO.firebaseio.com",
-      projectId: "SEU_PROJETO",
-      storageBucket: "SEU_PROJETO.appspot.com",
-      messagingSenderId: "XXXXXXX",
-      appId: "APP_ID"
-    };
+    const API_URL = 'SUA_URL_DO_WEBAPP_AQUI'; // <== Cole aqui sua URL
 
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-    const itemList = document.getElementById("item-list");
+    async function carregarLista() {
+      const res = await fetch(API_URL);
+      const dados = await res.json();
 
-    // 🔰 Itens iniciais da festa
-    const defaultItems = [
-      "Refrigerante", "Salgadinhos", "Pratos descartáveis", "Guardanapos", "Doce caseiro"
-    ];
+      const ul = document.getElementById('item-list');
+      ul.innerHTML = '';
 
-    // 🔄 Atualiza lista ao vivo
-    db.ref("itens").on("value", (snapshot) => {
-      const data = snapshot.val() || {};
-      itemList.innerHTML = "";
-      defaultItems.forEach(item => {
-        const li = document.createElement("li");
-        const escolhido = data[item];
-
-        if (escolhido) {
-          li.className = "chosen";
-          li.textContent = `${item} (por ${escolhido})`;
+      dados.forEach(linha => {
+        const li = document.createElement('li');
+        if (linha.nome) {
+          li.classList.add('chosen');
+          li.innerHTML = `${linha.item} <span class="name">(por ${linha.nome})</span>`;
         } else {
-          li.innerHTML = `${item} <button onclick="escolher('${item}')">Escolher</button>`;
+          li.innerHTML = `${linha.item} <button onclick="escolherItem('${linha.item}')">Escolher</button>`;
         }
-        itemList.appendChild(li);
+        ul.appendChild(li);
       });
-    });
+    }
 
-    // ✅ Escolha de item
-    function escolher(item) {
+    async function escolherItem(item) {
       const nome = prompt(`Digite seu nome para confirmar que levará "${item}":`);
       if (!nome) return;
 
-      db.ref(`itens/${item}`).set(nome);
+      await fetch(API_URL, {
+        method: 'POST',
+        body: JSON.stringify({ item, nome }),
+        headers: { 'Content-Type': 'application/json' }
+      });
+
+      carregarLista(); // Atualiza
     }
+
+    carregarLista();
   </script>
 </body>
 </html>
