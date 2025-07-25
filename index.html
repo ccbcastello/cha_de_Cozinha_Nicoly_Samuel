@@ -11,7 +11,9 @@
       padding: 1rem;
       text-align: center;
     }
-    h1 { color: #4CAF50; }
+    h1 {
+      color: #4CAF50;
+    }
     ul {
       max-width: 500px;
       margin: 2rem auto;
@@ -53,10 +55,10 @@
 </head>
 <body>
   <h1>Lista da Festa 🎉</h1>
-  <ul id="item-list"></ul>
+  <ul id="item-list">Carregando lista...</ul>
 
   <script>
-    const API_URL = 'https://script.google.com/macros/s/AKfycbzmtfpEtXFrdI-uG_pyiCQv95-iNQpx8Rkor28kaIto_a6y1ouhfVfhNjeAuOnZkfk/exec'; // <== Cole aqui sua URL
+    const API_URL = 'https://script.google.com/macros/s/AKfycbzmtfpEtXFrdI-uG_pyiCQv95-iNQpx8Rkor28kaIto_a6y1ouhfVfhNjeAuOnZkfk/exec';
 
     async function carregarLista() {
       const res = await fetch(API_URL);
@@ -87,7 +89,7 @@
         headers: { 'Content-Type': 'application/json' }
       });
 
-      carregarLista(); // Atualiza
+      carregarLista(); // Atualiza a lista após escolha
     }
 
     carregarLista();
