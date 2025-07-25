@@ -49,4 +49,73 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      box-sha
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      transition: 0.2s;
+    }
+
+    li.chosen {
+      background-color: #ddd;
+      text-decoration: line-through;
+      color: #777;
+    }
+
+    button {
+      background-color: #4CAF50;
+      border: none;
+      color: white;
+      padding: 0.5rem 0.8rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+
+    button:disabled {
+      background-color: #999;
+      cursor: not-allowed;
+    }
+
+    span.name {
+      font-size: 0.9rem;
+      color: #444;
+      margin-left: 1rem;
+    }
+
+    @media (max-width: 500px) {
+      li {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      button {
+        margin-top: 0.5rem;
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>Lista da Festa 🎉</header>
+  <main>
+    <p>Escolha um item para levar. Após a escolha, ele ficará marcado e não poderá ser selecionado novamente.</p>
+    <ul id="item-list">
+      <li data-item="Refrigerante">Refrigerante <button onclick="chooseItem(this)">Escolher</button></li>
+      <li data-item="Salgadinhos">Salgadinhos <button onclick="chooseItem(this)">Escolher</button></li>
+      <li data-item="Pratos descartáveis">Pratos descartáveis <button onclick="chooseItem(this)">Escolher</button></li>
+      <li data-item="Guardanapos">Guardanapos <button onclick="chooseItem(this)">Escolher</button></li>
+      <li data-item="Doce caseiro">Doce caseiro <button onclick="chooseItem(this)">Escolher</button></li>
+    </ul>
+  </main>
+
+  <script>
+    function chooseItem(button) {
+      const li = button.parentElement;
+      const itemName = li.dataset.item;
+      const name = prompt(`Digite seu nome para confirmar que levará "${itemName}":`);
+      if (!name) return;
+
+      li.classList.add("chosen");
+      li.innerHTML = `${itemName} <span class="name">(${name})</span>`;
+    }
+  </script>
+</body>
+</html>
