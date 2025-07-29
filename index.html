@@ -2,97 +2,86 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Lista da Festa 🎉</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f7f7f7;
-      padding: 1rem;
-      text-align: center;
-    }
-    h1 {
-      color: #4CAF50;
-    }
-    ul {
-      max-width: 500px;
-      margin: 2rem auto;
-      padding: 0;
-      list-style: none;
-    }
-    li {
-      background: #fff;
-      margin-bottom: 1rem;
-      padding: 1rem;
-      border-radius: 8px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    li.chosen {
-      background-color: #ddd;
-      text-decoration: line-through;
-      color: #777;
-    }
-    button {
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      padding: 0.5rem 1rem;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-    button:disabled {
-      background-color: #999;
-    }
-    .name {
-      font-size: 0.9rem;
-      color: #333;
-      margin-left: 10px;
-    }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lista de Itens da Festa</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
-  <h1>Lista da Festa 🎉</h1>
-  <ul id="item-list">Carregando lista...</ul>
+<body class="bg-light">
+
+  <div class="container py-4">
+    <h1 class="text-center mb-4">Lista de Itens da Festa 🎉</h1>
+    <ul id="item-list" class="list-group"></ul>
+  </div>
 
   <script>
     const API_URL = 'https://script.google.com/macros/s/AKfycbxeogAcdtqk7RyZiEa09rxiweTtOCws0JKN_Hz3HkEAp3YxUJilIUbwnM8D6LZWBR8v/exec';
 
-    async function carregarLista() {
-      const res = await fetch(API_URL);
-      const dados = await res.json();
+    async function loadList() {
+      const response = await fetch(API_URL);
+      const data = await response.json();
+      updateList(data);
+    }
 
-      const ul = document.getElementById('item-list');
-      ul.innerHTML = '';
+    function updateList(data) {
+      const listElement = document.getElementById('item-list');
+      listElement.innerHTML = '';
 
-      dados.forEach(linha => {
+      data.forEach(row => {
         const li = document.createElement('li');
-        if (linha.nome) {
-          li.classList.add('chosen');
-          li.innerHTML = `${linha.item} <span class="name">(por ${linha.nome})</span>`;
+        li.className = 'list-group-item d-flex justify-content-between align-items-center flex-wrap';
+
+        if (row.nome) {
+          li.innerHTML = `<span style="text-decoration: line-through;">${row.item} - ${row.nome}</span>`;
         } else {
-          li.innerHTML = `${linha.item} <button onclick="escolherItem('${linha.item}')">Escolher</button>`;
+          const itemName = document.createElement('span');
+          itemName.className = 'mb-2 mb-md-0';
+          itemName.innerText = row.item;
+
+          const input = document.createElement('input');
+          input.placeholder = "Seu nome";
+          input.className = "form-control form-control-sm me-2";
+
+          const button = document.createElement('button');
+          button.innerText = "Escolher";
+          button.className = "btn btn-sm btn-primary";
+          button.onclick = async () => {
+            const nome = input.value.trim();
+            if (!nome) {
+              alert("Digite seu nome.");
+              return;
+            }
+
+            const params = new URLSearchParams();
+            params.append('item', row.item);
+            params.append('nome', nome);
+
+            const res = await fetch(API_URL, {
+              method: 'POST',
+              body: params
+            });
+
+            const result = await res.json();
+            if (result.success) {
+              loadList(); // recarrega
+            } else {
+              alert("Erro ao salvar.");
+            }
+          };
+
+          const inputGroup = document.createElement('div');
+          inputGroup.className = "d-flex";
+          inputGroup.appendChild(input);
+          inputGroup.appendChild(button);
+
+          li.appendChild(itemName);
+          li.appendChild(inputGroup);
         }
-        ul.appendChild(li);
+
+        listElement.appendChild(li);
       });
     }
 
-    async function escolherItem(item) {
-      const nome = prompt(`Digite seu nome para confirmar que levará "${item}":`);
-      if (!nome) return;
-
-      await fetch(API_URL, {
-        method: 'POST',
-        body: JSON.stringify({ item, nome }),
-        headers: { 'Content-Type': 'application/json' }
-      });
-
-      carregarLista(); // Atualiza a lista após escolha
-    }
-
-    carregarLista();
+    window.onload = loadList;
   </script>
 </body>
 </html>
