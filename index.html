@@ -18,11 +18,21 @@
 
     async function loadList() {
       try {
-        const response = await fetch(API_URL);
+        const response = await fetch(API_URL, {
+          headers: {
+            'Accept': 'application/json'
+          },
+          cache: 'no-store'
+        });
+        const contentType = response.headers.get("content-type");
+        if (!contentType || !contentType.includes("application/json")) {
+          throw new Error("Resposta não está no formato JSON");
+        }
         const data = await response.json();
         updateList(data);
       } catch (error) {
-        alert("Erro ao carregar lista.");
+        console.error("Erro ao carregar lista:", error);
+        alert("Erro ao carregar lista: " + error.message);
       }
     }
 
@@ -73,7 +83,7 @@
               if (result.success) {
                 loadList();
               } else {
-                alert("Erro ao salvar. Tente novamente.");
+                alert("Erro ao salvar: " + (result.error || "Tente novamente."));
               }
             } catch (error) {
               alert("Erro na conexão com o servidor.");
