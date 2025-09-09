@@ -196,7 +196,7 @@
         <div class="card">
           <div class="card-header bg-white">
             <h5 class="mb-0 list-header food-header">
-              <i class="fas fa-utensils me-2"></i>Alimentos para levar
+              <i class="fas fa-utensils me-2"></i>Alimentos Disponíveis
             </h5>
             <div class="d-flex justify-content-between mt-2">
               <span class="status-badge available me-2">
@@ -369,6 +369,9 @@
             </div>
           `;
         } else {
+          // Gera um ID único para o campo de entrada
+          const inputId = `input-food-${row.item.replace(/\s+/g, '-').toLowerCase()}`;
+          
           li.innerHTML = `
             <div class="d-flex flex-column">
               <div class="d-flex justify-content-between align-items-center mb-2">
@@ -381,11 +384,12 @@
                        class="form-control me-2 mb-2 mb-md-0 flex-grow-1" 
                        placeholder="Seu nome completo" 
                        aria-label="Seu nome"
-                       id="input-food-${row.item.replace(/\s+/g, '-')}">
+                       id="${inputId}">
                 
                 <button class="btn btn-food reserve-btn" 
                         data-item="${row.item}"
-                        data-type="alimento">
+                        data-type="alimento"
+                        data-input-id="${inputId}">
                   Reservar Item
                 </button>
               </div>
@@ -456,6 +460,9 @@
             </div>
           `;
         } else {
+          // Gera um ID único para o campo de entrada
+          const inputId = `input-gifts-${row.item.replace(/\s+/g, '-').toLowerCase()}`;
+          
           li.innerHTML = `
             <div class="d-flex flex-column">
               <div class="d-flex justify-content-between align-items-center mb-2">
@@ -468,11 +475,12 @@
                        class="form-control me-2 mb-2 mb-md-0 flex-grow-1" 
                        placeholder="Seu nome completo" 
                        aria-label="Seu nome"
-                       id="input-gifts-${row.item.replace(/\s+/g, '-')}">
+                       id="${inputId}">
                 
                 <button class="btn btn-gifts reserve-btn" 
                         data-item="${row.item}"
-                        data-type="presente">
+                        data-type="presente"
+                        data-input-id="${inputId}">
                   Reservar Item
                 </button>
               </div>
@@ -505,12 +513,14 @@
       const button = event.target;
       const item = button.getAttribute('data-item');
       const type = button.getAttribute('data-type');
-      const inputId = `input-${type}-${item.replace(/\s+/g, '-')}`;
+      const inputId = button.getAttribute('data-input-id');
+      
+      // Encontra o campo de entrada usando o ID armazenado no botão
       const nameInput = document.getElementById(inputId);
       
       // Verifica se o elemento existe antes de manipular
       if (!nameInput) {
-        showError("Elemento de entrada não encontrado.");
+        showError("Campo de entrada não encontrado. Recarregue a página e tente novamente.");
         return;
       }
       
@@ -736,12 +746,15 @@
         loadList();
         
         // Inicializa atualizações recentes
-        document.getElementById('recent-updates').innerHTML = `
-          <li class="list-group-item text-center py-3">
-            <i class="fas fa-clock me-2"></i>
-            As atualizações aparecerão aqui
-          </li>
-        `;
+        const updatesList = document.getElementById('recent-updates');
+        if (updatesList) {
+          updatesList.innerHTML = `
+            <li class="list-group-item text-center py-3">
+              <i class="fas fa-clock me-2"></i>
+              As atualizações aparecerão aqui
+            </li>
+          `;
+        }
       } else {
         showError("Erro na inicialização da página. Recarregue a página.");
       }
@@ -749,4 +762,3 @@
   </script>
 </body>
 </html>
-
