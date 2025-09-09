@@ -171,6 +171,10 @@
     .gifts-badge {
       background-color: var(--gifts-color);
     }
+    
+    .instructions-section {
+      margin-bottom: 2rem;
+    }
   </style>
 </head>
 <body>
@@ -190,6 +194,43 @@
   </header>
 
   <div class="container">
+    <!-- Seção de Instruções no Topo -->
+    <div class="row instructions-section">
+      <div class="col-md-6 mb-4">
+        <div class="card summary-card">
+          <div class="card-body">
+            <h5 class="card-title">
+              <i class="fas fa-info-circle me-2"></i>Como funciona
+            </h5>
+            <ol class="ps-3">
+              <li class="mb-2">Escolha um item disponível</li>
+              <li class="mb-2">Digite seu nome completo</li>
+              <li class="mb-2">Clique em "Reservar Item"</li>
+              <li>O item ficará marcado como seu</li>
+            </ol>
+            <div class="alert alert-info mt-3">
+              <i class="fas fa-exclamation-circle me-2"></i>
+              Você só pode reservar itens que ainda não foram escolhidos.
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-md-6 mb-4">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">
+              <i class="fas fa-history me-2"></i>Atualizações Recentes
+            </h5>
+            <ul id="recent-updates" class="list-group list-group-flush">
+              <li class="list-group-item">Carregando histórico...</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Seção de Listas de Itens -->
     <div class="row">
       <!-- Coluna de Alimentos -->
       <div class="col-lg-6 mb-4">
@@ -235,44 +276,6 @@
           </div>
           <div class="card-body p-0">
             <ul id="gifts-list" class="list-group list-group-flush"></ul>
-          </div>
-        </div>
-      </div>
-      
-      <!-- Coluna de Informações -->
-      <div class="col-lg-12">
-        <div class="row">
-          <div class="col-md-6 mb-4">
-            <div class="card summary-card">
-              <div class="card-body">
-                <h5 class="card-title">
-                  <i class="fas fa-info-circle me-2"></i>Como funciona
-                </h5>
-                <ol class="ps-3">
-                  <li class="mb-2">Escolha um item disponível</li>
-                  <li class="mb-2">Digite seu nome completo</li>
-                  <li class="mb-2">Clique em "Reservar Item"</li>
-                  <li>O item ficará marcado como seu</li>
-                </ol>
-                <div class="alert alert-info mt-3">
-                  <i class="fas fa-exclamation-circle me-2"></i>
-                  Você só pode reservar itens que ainda não foram escolhidos.
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          <div class="col-md-6 mb-4">
-            <div class="card">
-              <div class="card-body">
-                <h5 class="card-title">
-                  <i class="fas fa-history me-2"></i>Atualizações Recentes
-                </h5>
-                <ul id="recent-updates" class="list-group list-group-flush">
-                  <li class="list-group-item">Carregando histórico...</li>
-                </ul>
-              </div>
-            </div>
           </div>
         </div>
       </div>
@@ -762,4 +765,3 @@
   </script>
 </body>
 </html>
-
