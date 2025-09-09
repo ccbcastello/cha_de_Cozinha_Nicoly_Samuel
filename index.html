@@ -330,6 +330,13 @@
     function updateFoodList(data) {
       const foodList = data.filter(item => item.tipo === 'alimento');
       const listElement = document.getElementById('food-list');
+      
+      // Verifica se o elemento existe antes de manipular
+      if (!listElement) {
+        console.error("Elemento 'food-list' não encontrado");
+        return;
+      }
+      
       listElement.innerHTML = '';
       
       if (foodList.length === 0) {
@@ -358,7 +365,7 @@
                   Reservado por: <strong>${row.nome}</strong>
                 </div>
               </div>
-              <span class="badge food-badge rounded-pill">Reservado</span>
+              <span class="badge bg-success rounded-pill">Reservado</span>
             </div>
           `;
         } else {
@@ -394,8 +401,11 @@
       const availableFood = foodList.filter(item => !item.nome).length;
       const takenFood = foodList.filter(item => item.nome).length;
       
-      document.getElementById('available-food-count').textContent = availableFood;
-      document.getElementById('taken-food-count').textContent = takenFood;
+      const availableFoodElement = document.getElementById('available-food-count');
+      const takenFoodElement = document.getElementById('taken-food-count');
+      
+      if (availableFoodElement) availableFoodElement.textContent = availableFood;
+      if (takenFoodElement) takenFoodElement.textContent = takenFood;
       
       // Adiciona event listeners aos botões de reserva
       document.querySelectorAll('.reserve-btn').forEach(button => {
@@ -407,6 +417,13 @@
     function updateGiftsList(data) {
       const giftsList = data.filter(item => item.tipo === 'presente');
       const listElement = document.getElementById('gifts-list');
+      
+      // Verifica se o elemento existe antes de manipular
+      if (!listElement) {
+        console.error("Elemento 'gifts-list' não encontrado");
+        return;
+      }
+      
       listElement.innerHTML = '';
       
       if (giftsList.length === 0) {
@@ -435,7 +452,7 @@
                   Reservado por: <strong>${row.nome}</strong>
                 </div>
               </div>
-              <span class="badge gifts-badge rounded-pill">Reservado</span>
+              <span class="badge bg-success rounded-pill">Reservado</span>
             </div>
           `;
         } else {
@@ -471,8 +488,11 @@
       const availableGifts = giftsList.filter(item => !item.nome).length;
       const takenGifts = giftsList.filter(item => item.nome).length;
       
-      document.getElementById('available-gifts-count').textContent = availableGifts;
-      document.getElementById('taken-gifts-count').textContent = takenGifts;
+      const availableGiftsElement = document.getElementById('available-gifts-count');
+      const takenGiftsElement = document.getElementById('taken-gifts-count');
+      
+      if (availableGiftsElement) availableGiftsElement.textContent = availableGifts;
+      if (takenGiftsElement) takenGiftsElement.textContent = takenGifts;
       
       // Adiciona event listeners aos botões de reserva
       document.querySelectorAll('.reserve-btn').forEach(button => {
@@ -487,8 +507,14 @@
       const type = button.getAttribute('data-type');
       const inputId = `input-${type}-${item.replace(/\s+/g, '-')}`;
       const nameInput = document.getElementById(inputId);
-      const errorElement = nameInput.parentElement.querySelector('.error-message');
       
+      // Verifica se o elemento existe antes de manipular
+      if (!nameInput) {
+        showError("Elemento de entrada não encontrado.");
+        return;
+      }
+      
+      const errorElement = nameInput.parentElement.querySelector('.error-message');
       const nome = nameInput.value.trim();
       
       // Validação
@@ -551,8 +577,11 @@
       const available = data.filter(item => !item.nome).length;
       const taken = data.filter(item => item.nome).length;
       
-      document.getElementById('available-count').textContent = available;
-      document.getElementById('taken-count').textContent = taken;
+      const availableElement = document.getElementById('available-count');
+      const takenElement = document.getElementById('taken-count');
+      
+      if (availableElement) availableElement.textContent = available;
+      if (takenElement) takenElement.textContent = taken;
     }
     
     // Função para atualizar a data/hora da última atualização
@@ -560,12 +589,23 @@
       const now = new Date();
       const formattedDate = now.toLocaleDateString('pt-BR');
       const formattedTime = now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-      document.getElementById('last-updated').textContent = `${formattedDate} ${formattedTime}`;
+      
+      const lastUpdatedElement = document.getElementById('last-updated');
+      if (lastUpdatedElement) {
+        lastUpdatedElement.textContent = `${formattedDate} ${formattedTime}`;
+      }
     }
     
     // Função para adicionar atualização recente
     function addRecentUpdate(item, name, type) {
       const updatesList = document.getElementById('recent-updates');
+      
+      // Verifica se o elemento existe antes de manipular
+      if (!updatesList) {
+        console.error("Elemento 'recent-updates' não encontrado");
+        return;
+      }
+      
       const now = new Date();
       const formattedTime = now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
       
@@ -575,7 +615,7 @@
         <div class="d-flex">
           <div class="flex-grow-1">
             <strong>${name}</strong> reservou <strong>${item}</strong>
-            <span class="badge ${type === 'alimento' ? 'food-badge' : 'gifts-badge'} ms-1">
+            <span class="badge ${type === 'alimento' ? 'bg-warning' : 'bg-info'} ms-1">
               ${type === 'alimento' ? 'Alimento' : 'Presente'}
             </span>
           </div>
@@ -599,20 +639,23 @@
     
     // Funções auxiliares
     function showLoader(show) {
-      const loader = document.getElementById('loader');
-      if (!loader && show) {
-        const loaderDiv = document.createElement('div');
-        loaderDiv.id = 'loader';
-        loaderDiv.className = 'position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center';
-        loaderDiv.style.backgroundColor = 'rgba(255, 255, 255, 0.7)';
-        loaderDiv.style.zIndex = '1000';
-        loaderDiv.innerHTML = `
-          <div class="spinner-border text-primary" role="status">
-            <span class="visually-hidden">Carregando...</span>
-          </div>
-        `;
-        document.body.appendChild(loaderDiv);
-      } else if (loader && !show) {
+      let loader = document.getElementById('loader');
+      
+      if (show) {
+        if (!loader) {
+          loader = document.createElement('div');
+          loader.id = 'loader';
+          loader.className = 'position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center';
+          loader.style.backgroundColor = 'rgba(255, 255, 255, 0.7)';
+          loader.style.zIndex = '1000';
+          loader.innerHTML = `
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Carregando...</span>
+            </div>
+          `;
+          document.body.appendChild(loader);
+        }
+      } else if (loader) {
         document.body.removeChild(loader);
       }
     }
@@ -621,6 +664,7 @@
       const alertDiv = document.createElement('div');
       alertDiv.className = 'alert alert-danger alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3';
       alertDiv.style.zIndex = '1050';
+      alertDiv.style.maxWidth = '90%';
       alertDiv.innerHTML = `
         <strong>Erro!</strong> ${message}
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -640,6 +684,7 @@
       const alertDiv = document.createElement('div');
       alertDiv.className = 'alert alert-success alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3';
       alertDiv.style.zIndex = '1050';
+      alertDiv.style.maxWidth = '90%';
       alertDiv.innerHTML = `
         <i class="fas fa-check-circle me-2"></i>
         ${message}
@@ -657,6 +702,8 @@
     }
     
     function showErrorElement(element, message) {
+      if (!element) return;
+      
       element.textContent = message;
       element.classList.remove('d-none');
       
@@ -668,15 +715,36 @@
     
     // Inicializa a aplicação
     window.onload = function() {
-      loadList();
+      // Verifica se todos os elementos necessários existem
+      const requiredElements = [
+        'food-list', 'gifts-list', 'recent-updates', 
+        'available-count', 'taken-count', 'last-updated',
+        'available-food-count', 'taken-food-count',
+        'available-gifts-count', 'taken-gifts-count'
+      ];
       
-      // Inicializa atualizações recentes
-      document.getElementById('recent-updates').innerHTML = `
-        <li class="list-group-item text-center py-3">
-          <i class="fas fa-clock me-2"></i>
-          As atualizações aparecerão aqui
-        </li>
-      `;
+      let allElementsExist = true;
+      
+      requiredElements.forEach(id => {
+        if (!document.getElementById(id)) {
+          console.error(`Elemento com ID '${id}' não encontrado`);
+          allElementsExist = false;
+        }
+      });
+      
+      if (allElementsExist) {
+        loadList();
+        
+        // Inicializa atualizações recentes
+        document.getElementById('recent-updates').innerHTML = `
+          <li class="list-group-item text-center py-3">
+            <i class="fas fa-clock me-2"></i>
+            As atualizações aparecerão aqui
+          </li>
+        `;
+      } else {
+        showError("Erro na inicialização da página. Recarregue a página.");
+      }
     };
   </script>
 </body>
