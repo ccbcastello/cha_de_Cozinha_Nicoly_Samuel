@@ -9,6 +9,7 @@
   <style>
     :root {
       --primary-color: #6f42c1;
+      --secondary-color: #20c997;
       --success-color: #28a745;
       --danger-color: #dc3545;
     }
@@ -68,9 +69,19 @@
       border-color: var(--primary-color);
     }
     
+    .btn-secondary {
+      background-color: var(--secondary-color);
+      border-color: var(--secondary-color);
+    }
+    
     .btn-primary:hover {
       background-color: #5a32a3;
       border-color: #5a32a3;
+    }
+    
+    .btn-secondary:hover {
+      background-color: #19a97b;
+      border-color: #19a97b;
     }
     
     .spinner-border {
@@ -120,6 +131,22 @@
       color: #6c757d;
       font-size: 0.9rem;
     }
+    
+    .nav-pills .nav-link.active {
+      background-color: var(--primary-color);
+    }
+    
+    .list-title {
+      border-bottom: 2px solid var(--primary-color);
+      padding-bottom: 10px;
+      margin-bottom: 15px;
+    }
+    
+    .list-title-secondary {
+      border-bottom: 2px solid var(--secondary-color);
+      padding-bottom: 10px;
+      margin-bottom: 15px;
+    }
   </style>
 </head>
 <body>
@@ -141,22 +168,66 @@
   <div class="container">
     <div class="row">
       <div class="col-md-8 mb-4">
-        <div class="card">
-          <div class="card-header bg-white d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">Itens Disponíveis</h5>
-            <div class="d-flex">
-              <span class="status-badge available me-2">
-                <span class="status-indicator available-indicator"></span>
-                <span id="available-count-sm">0</span> disponíveis
-              </span>
-              <span class="status-badge taken">
-                <span class="status-indicator taken-indicator"></span>
-                <span id="taken-count-sm">0</span> escolhidos
-              </span>
+        <ul class="nav nav-pills mb-3" id="listTabs" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="food-tab" data-bs-toggle="pill" data-bs-target="#food-list" type="button" role="tab">
+              <i class="fas fa-utensils me-1"></i> Alimentos
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="gifts-tab" data-bs-toggle="pill" data-bs-target="#gifts-list" type="button" role="tab">
+              <i class="fas fa-gift me-1"></i> Presentes
+            </button>
+          </li>
+        </ul>
+        
+        <div class="tab-content" id="listTabsContent">
+          <!-- Lista de Alimentos -->
+          <div class="tab-pane fade show active" id="food-list" role="tabpanel">
+            <div class="card">
+              <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 list-title">
+                  <i class="fas fa-utensils me-2"></i>Alimentos Disponíveis
+                </h5>
+                <div class="d-flex">
+                  <span class="status-badge available me-2">
+                    <span class="status-indicator available-indicator"></span>
+                    <span id="available-food-count">0</span> disponíveis
+                  </span>
+                  <span class="status-badge taken">
+                    <span class="status-indicator taken-indicator"></span>
+                    <span id="taken-food-count">0</span> escolhidos
+                  </span>
+                </div>
+              </div>
+              <div class="card-body p-0">
+                <ul id="food-item-list" class="list-group list-group-flush"></ul>
+              </div>
             </div>
           </div>
-          <div class="card-body p-0">
-            <ul id="item-list" class="list-group list-group-flush"></ul>
+          
+          <!-- Lista de Presentes -->
+          <div class="tab-pane fade" id="gifts-list" role="tabpanel">
+            <div class="card">
+              <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 list-title-secondary">
+                  <i class="fas fa-gift me-2"></i>Presentes para Levar
+                </h5>
+                <div class="d-flex">
+                  <span class="status-badge available me-2">
+                    <span class="status-indicator available-indicator"></span>
+                    <span id="available-gifts-count">0</span> disponíveis
+                  </span>
+                  <span class="status-badge taken">
+                    <span class="status-indicator taken-indicator"></span>
+                    <span id="taken-gifts-count">0</span> escolhidos
+                  </span>
+                </div>
+              </div>
+              <div class="card-body p-0">
+                <ul id="gifts-item-list" class="list-group list-group-flush"></ul>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -200,10 +271,14 @@
     </div>
   </footer>
 
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
     // Substitua pela URL do seu Google Apps Script
     const API_URL = 'https://script.google.com/macros/s/AKfycbxeogAcdtqk7RyZiEa09rxiweTtOCws0JKN_Hz3HkEAp3YxUJilIUbwnM8D6LZWBR8v/exec';
-    let itemsData = [];
+    let itemsData = {
+      alimentos: [],
+      presentes: []
+    };
     
     // Função para carregar a lista de itens
     async function loadList() {
@@ -223,9 +298,15 @@
           throw new Error("A resposta não está no formato JSON");
         }
         
-        itemsData = await response.json();
-        updateList(itemsData);
-        updateSummary(itemsData);
+        const data = await response.json();
+        
+        // Separar os dados em alimentos e presentes
+        itemsData.alimentos = data.filter(item => item.tipo === 'alimento' || !item.tipo);
+        itemsData.presentes = data.filter(item => item.tipo === 'presente');
+        
+        updateList('alimentos', itemsData.alimentos);
+        updateList('presentes', itemsData.presentes);
+        updateSummary();
         updateLastUpdated();
       } catch (error) {
         console.error("Erro ao carregar lista:", error);
@@ -236,8 +317,8 @@
     }
     
     // Função para atualizar a lista na interface
-    function updateList(data) {
-      const listElement = document.getElementById('item-list');
+    function updateList(type, data) {
+      const listElement = document.getElementById(`${type}-item-list`);
       listElement.innerHTML = '';
       
       if (data.length === 0) {
@@ -274,7 +355,7 @@
             <div class="d-flex flex-column">
               <div class="d-flex justify-content-between align-items-center mb-2">
                 <span class="item-name">${row.item}</span>
-                <span class="badge bg-primary rounded-pill">Disponível</span>
+                <span class="badge ${type === 'alimentos' ? 'bg-primary' : 'bg-secondary'} rounded-pill">Disponível</span>
               </div>
               
               <div class="d-flex flex-wrap align-items-center">
@@ -282,10 +363,11 @@
                        class="form-control me-2 mb-2 mb-md-0 flex-grow-1" 
                        placeholder="Seu nome completo" 
                        aria-label="Seu nome"
-                       id="input-${row.item.replace(/\s+/g, '-')}">
+                       id="input-${type}-${row.item.replace(/\s+/g, '-')}">
                 
-                <button class="btn btn-primary reserve-btn" 
-                        data-item="${row.item}">
+                <button class="btn ${type === 'alimentos' ? 'btn-primary' : 'btn-secondary'} reserve-btn" 
+                        data-item="${row.item}"
+                        data-type="${type}">
                   Reservar Item
                 </button>
               </div>
@@ -301,13 +383,21 @@
       document.querySelectorAll('.reserve-btn').forEach(button => {
         button.addEventListener('click', handleReservation);
       });
+      
+      // Atualizar contadores específicos
+      const available = data.filter(item => !item.nome).length;
+      const taken = data.filter(item => item.nome).length;
+      
+      document.getElementById(`available-${type}-count`).textContent = available;
+      document.getElementById(`taken-${type}-count`).textContent = taken;
     }
     
     // Função para lidar com a reserva de item
     async function handleReservation(event) {
       const button = event.target;
       const item = button.getAttribute('data-item');
-      const inputId = `input-${item.replace(/\s+/g, '-')}`;
+      const type = button.getAttribute('data-type');
+      const inputId = `input-${type}-${item.replace(/\s+/g, '-')}`;
       const nameInput = document.getElementById(inputId);
       const errorElement = nameInput.parentElement.querySelector('.error-message');
       
@@ -337,6 +427,7 @@
         const params = new URLSearchParams();
         params.append('item', item);
         params.append('nome', nome);
+        params.append('tipo', type === 'alimentos' ? 'alimento' : 'presente');
         
         const response = await fetch(API_URL, {
           method: 'POST',
@@ -351,7 +442,7 @@
           await loadList();
           
           // Adiciona ao histórico de atualizações
-          addRecentUpdate(item, nome);
+          addRecentUpdate(item, nome, type);
           
           showSuccess(`Item "${item}" reservado com sucesso para ${nome}!`);
         } else {
@@ -368,14 +459,18 @@
     }
     
     // Função para atualizar o resumo
-    function updateSummary(data) {
-      const available = data.filter(item => !item.nome).length;
-      const taken = data.filter(item => item.nome).length;
+    function updateSummary() {
+      const availableFood = itemsData.alimentos.filter(item => !item.nome).length;
+      const takenFood = itemsData.alimentos.filter(item => item.nome).length;
       
-      document.getElementById('available-count').textContent = available;
-      document.getElementById('taken-count').textContent = taken;
-      document.getElementById('available-count-sm').textContent = available;
-      document.getElementById('taken-count-sm').textContent = taken;
+      const availableGifts = itemsData.presentes.filter(item => !item.nome).length;
+      const takenGifts = itemsData.presentes.filter(item => item.nome).length;
+      
+      const totalAvailable = availableFood + availableGifts;
+      const totalTaken = takenFood + takenGifts;
+      
+      document.getElementById('available-count').textContent = totalAvailable;
+      document.getElementById('taken-count').textContent = totalTaken;
     }
     
     // Função para atualizar a data/hora da última atualização
@@ -387,7 +482,7 @@
     }
     
     // Função para adicionar atualização recente
-    function addRecentUpdate(item, name) {
+    function addRecentUpdate(item, name, type) {
       const updatesList = document.getElementById('recent-updates');
       const now = new Date();
       const formattedTime = now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
@@ -398,15 +493,19 @@
         <div class="d-flex">
           <div class="flex-grow-1">
             <strong>${name}</strong> reservou <strong>${item}</strong>
+            <span class="badge ${type === 'alimentos' ? 'bg-primary' : 'bg-secondary'} ms-1">
+              ${type === 'alimentos' ? 'Alimento' : 'Presente'}
+            </span>
           </div>
           <div class="text-muted small">${formattedTime}</div>
         </div>
       `;
       
       // Adiciona no topo da lista
-      if (updatesList.children.length > 0) {
+      if (updatesList.children.length > 0 && updatesList.children[0].classList.contains('list-group-item')) {
         updatesList.insertBefore(li, updatesList.firstChild);
       } else {
+        updatesList.innerHTML = '';
         updatesList.appendChild(li);
       }
       
