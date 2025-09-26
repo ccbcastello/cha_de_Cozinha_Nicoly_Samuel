@@ -3,22 +3,30 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Chá de Cozinha da Samuel & Nicoly</title>
+  <title>Nossa Festa de Confraternização</title>
   <link rel="icon" href="https://public-frontend-cos.metadl.com/mgx/img/favicon.png" type="image/png">
   <link rel="stylesheet" href="./style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script type="importmap">
+{
+  "imports": {
+    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.21.0",
+    "marked": "https://aistudiocdn.com/marked@^16.3.0"
+  }
+}
+</script>
 </head>
 <body>
 
   <header>
-    <h1>Chá de Cozinha da Samuel & Nicoly</h1>
-    <p>Venha celebrar este momento especial com muito carinho!</p>
+    <h1>Nossa Festa de Confraternização</h1>
+    <p>Vamos celebrar juntos! Colabore trazendo um prato ou bebida.</p>
   </header>
 
   <section>
-    <h2>Lista de Presentes</h2>
+    <h2>Lista de Comidas & Bebidas</h2>
     <div id="loading-indicator" class="loading-indicator">
-      <p>Carregando lista de presentes... ⏳</p>
+      <p>Carregando nossa lista de delícias... ⏳</p>
     </div>
     <div id="lista" class="presentes"></div>
   </section>
@@ -43,6 +51,3 @@
   <script src="./script.js"></script>
 </body>
 </html>
-
-
-
