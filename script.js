@@ -2,6 +2,7 @@
 // Main JavaScript file
 
 // Configuração fixa - URL do Google Apps Script Web App
+// TODO: Substitua pela URL do seu novo Web App do Google Apps Script para a lista de comidas
 const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyB0UvaidvVr5j8NT5HjP7QkUHE7ISIXaSAHIFMmtLvHLYAUULJLTyt8IeBsCrt-RhV/exec';
 
 let itens = [];
@@ -85,50 +86,51 @@ function carregarDadosJSONP() {
 
 function carregarListaPadrao() {
     itens = [
-        { nome: "Escorredor de macarrão", icone: "🍝" },
-        { nome: "Escorredor de arroz", icone: "🍚" },
-        { nome: "Tábua de madeira", icone: "🪵" },
-        { nome: "Tábua de plástico", icone: "📋" },
-        { nome: "Tábua de vidro", icone: "🔷" },
-        { nome: "Escorredor de louça", icone: "🍽️" },
-        { nome: "Kit pia (lixeira, porta detergente)", icone: "🧽" },
-        { nome: "Rodinho de pia", icone: "🧹" },
-        { nome: "Ralador", icone: "🧀" },
-        { nome: "Descascador", icone: "🥔" },
-        { nome: "Batedor de ovos", icone: "🥚" },
-        { nome: "Concha", icone: "🥄" },
-        { nome: "Escumadeira", icone: "🍳" },
-        { nome: "Pegador de massas", icone: "🍝" },
-        { nome: "Espátula", icone: "🍳" },
-        { nome: "Colher de pau", icone: "🥄" },
-        { nome: "Colheres medidoras", icone: "📏" },
-        { nome: "Peneira", icone: "⚪" },
-        { nome: "Funil", icone: "🔽" },
-        { nome: "Saladeira", icone: "🥗" },
-        { nome: "Fruteira", icone: "🍎" },
-        { nome: "Jarra de suco", icone: "🥤" },
-        { nome: "Luva térmica", icone: "🧤" },
-        { nome: "Panos de prato", icone: "🧽" },
-        { nome: "Jogo americano", icone: "🍽️" },
-        { nome: "Toalha de mesa", icone: "🏠" },
-        { nome: "Centrífuga de salada", icone: "🥬" },
-        { nome: "Espremedor de alho", icone: "🧄" },
-        { nome: "Pote de vidro hermético", icone: "🫙" },
-        { nome: "Potes de condimentos", icone: "🧂" },
-        { nome: "Potes de plástico", icone: "📦" },
-        { nome: "Potes de vidro", icone: "🫙" },
-        { nome: "Potes de mantimentos", icone: "🏺" },
-        { nome: "Assadeira redonda", icone: "🍰" },
-        { nome: "Assadeira retangular", icone: "🍞" },
-        { nome: "Assadeira redonda com furo", icone: "🍩" },
-        { nome: "Baldes", icone: "🪣" },
-        { nome: "Bacias", icone: "🥣" },
-        { nome: "Vassoura", icone: "🧹" },
-        { nome: "Rodo", icone: "🧽" },
-        { nome: "Varal", icone: "👕" },
-        { nome: "Cabide", icone: "👔" },
-        { nome: "Varal com prendedores", icone: "📎" },
-        { nome: "Cesto de roupa", icone: "🧺" }
+        // Salgados
+        { nome: "Torta de Frango", icone: "🥧" },
+        { nome: "Empadão de Palmito", icone: "🥧" },
+        { nome: "Quiche de Alho Poró", icone: "🥧" },
+        { nome: "Mini Pão de Queijo", icone: "🧀" },
+        { nome: "Mini Pizza", icone: "🍕" },
+        { nome: "Mini Esfiha de Carne", icone: "🍕" },
+        { nome: "Enroladinho de Salsicha", icone: "🌭" },
+        { nome: "Cachorro Quente de Forno", icone: "🌭" },
+        { nome: "Barquinhas com Maionese", icone: "⛵" },
+        { nome: "Canapés", icone: "🥪" },
+        { nome: "Patê com Torradas", icone: "🍞" },
+
+        // Pratos Principais
+        { nome: "Lasanha à Bolonhesa", icone: "🍝" },
+        { nome: "Fricassé de Frango", icone: "🍲" },
+        { nome: "Salpicão de Frango", icone: "🥗" },
+        { nome: "Arroz de Forno", icone: "🍚" },
+        { nome: "Carne Louca", icone: "🥩" },
+
+        // Acompanhamentos
+        { nome: "Salada de Maionese", icone: "🥔" },
+        { nome: "Salada Tropical", icone: "🥭" },
+        { nome: "Farofa", icone: "🥣" },
+        { nome: "Arroz Branco", icone: "🍚" },
+
+        // Sobremesas
+        { nome: "Bolo de Chocolate com Morango", icone: "🎂" },
+        { nome: "Bolo de Cenoura com Chocolate", icone: "🍰" },
+        { nome: "Pudim de Leite Condensado", icone: "🍮" },
+        { nome: "Mousse de Maracujá", icone: "🍮" },
+        { nome: "Torta de Limão", icone: "🍋" },
+        { nome: "Pavê de Chocolate", icone: "🍫" },
+        { nome: "Salada de Frutas", icone: "🍓" },
+        { nome: "Gelatina Colorida", icone: "🌈" },
+
+        // Bebidas
+        { nome: "Refrigerante 2L (Coca-Cola)", icone: "🥤" },
+        { nome: "Refrigerante 2L (Guaraná)", icone: "🥤" },
+        { nome: "Refrigerante 2L (Laranja)", icone: "🍊" },
+        { nome: "Suco Natural de Laranja 2L", icone: "🧃" },
+        { nome: "Suco Natural de Abacaxi 2L", icone: "🍍" },
+        { nome: "Água Mineral com Gás 1.5L", icone: "💧" },
+        { nome: "Água Mineral sem Gás 1.5L", icone: "💧" },
+        { nome: "Cerveja (Pack com 6)", icone: "🍺" }
     ];
     reservas = {};
     atualizarLista();
@@ -308,55 +310,55 @@ function obterIcone(itemNome) {
 
     // Mapeamento de Itens para Emojis
     const mapaEmojis = {
-        'escorredor de macarrão': '🍝',
-        'escorredor de arroz': '🍚',
-        'tábua de madeira': '🪵',
-        'tábua de plástico': '📋',
-        'tábua de vidro': '🔷',
-        'escorredor de louça': '🍽️',
-        'kit pia (lixeira, porta detergente)': '🧽',
-        'kit pia': '🧽',
-        'rodinho de pia': '🧹',
-        'ralador': '🧀',
-        'descascador': '🥔',
-        'batedor de ovos': '🥚',
-        'concha': '🥄',
-        'escumadeira': '🍳',
-        'pegador de massas': '🍝',
-        'espátula': '🍳',
-        'colher de pau': '🥄',
-        'colheres medidoras': '📏',
-        'peneira': '⚪',
-        'funil': '🔽',
-        'saladeira': '🥗',
-        'fruteira': '🍎',
-        'jarra de suco': '🥤',
-        'luva térmica': '🧤',
-        'panos de prato': '🧽',
-        'jogo americano': '🍽️',
-        'toalha de mesa': '🏠',
-        'centrífuga de salada': '🥬',
-        'espremedor de alho': '🧄',
-        'pote de vidro hermético': '🫙',
-        'potes de condimentos': '🧂',
-        'potes de plástico': '📦',
-        'potes de vidro': '🫙',
-        'potes de mantimentos': '🏺',
-        'assadeira redonda': '🍰',
-        'assadeira retangular': '🍞',
-        'assadeira redonda com furo': '🍩',
-        'baldes': '🪣',
-        'bacias': '🥣',
-        'vassoura': '🧹',
-        'rodo': '🧽',
-        'varal': '👕',
-        'cabide': '👔',
-        'varal com prendedores': '📎',
-        'cesto de roupa': '🧺'
+        // Salgados
+        'torta de frango': '🥧',
+        'empadão de palmito': '🥧',
+        'quiche de alho poró': '🥧',
+        'mini pão de queijo': '🧀',
+        'mini pizza': '🍕',
+        'mini esfiha de carne': '🍕',
+        'enroladinho de salsicha': '🌭',
+        'cachorro quente de forno': '🌭',
+        'barquinhas com maionese': '⛵',
+        'canapés': '🥪',
+        'patê com torradas': '🍞',
+
+        // Pratos Principais
+        'lasanha à bolonhesa': '🍝',
+        'fricassé de frango': '🍲',
+        'salpicão de frango': '🥗',
+        'arroz de forno': '🍚',
+        'carne louca': '🥩',
+
+        // Acompanhamentos
+        'salada de maionese': '🥔',
+        'salada tropical': '🥭',
+        'farofa': '🥣',
+        'arroz branco': '🍚',
+
+        // Sobremesas
+        'bolo de chocolate com morango': '🎂',
+        'bolo de cenoura com chocolate': '🍰',
+        'pudim de leite condensado': '🍮',
+        'mousse de maracujá': '🍮',
+        'torta de limão': '🍋',
+        'pavê de chocolate': '🍫',
+        'salada de frutas': '🍓',
+        'gelatina colorida': '🌈',
+
+        // Bebidas
+        'refrigerante 2l (coca-cola)': '🥤',
+        'refrigerante 2l (guaraná)': '🥤',
+        'refrigerante 2l (laranja)': '🍊',
+        'suco natural de laranja 2l': '🧃',
+        'suco natural de abacaxi 2l': '🍍',
+        'água mineral com gás 1.5l': '💧',
+        'água mineral sem gás 1.5l': '💧',
+        'cerveja (pack com 6)': '🍺'
     };
 
     // Emoji de Fallback (Ícone Padrão para itens desconhecidos)
-    const emojiPadrao = '🍴';
+    const emojiPadrao = '🍲';
 
     // Retorna o emoji mapeado ou o emoji padrão
     return mapaEmojis[nomePadronizado] || emojiPadrao;
