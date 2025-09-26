@@ -3,7 +3,7 @@
 
 // Configuração fixa - URL do Google Apps Script Web App
 // TODO: Substitua pela URL do seu novo Web App do Google Apps Script para a lista de comidas
-const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyB0UvaidvVr5j8NT5HjP7QkUHE7ISIXaSAHIFMmtLvHLYAUULJLTyt8IeBsCrt-RhV/exec';
+const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycby5DnlB0O6QUNy-9RW4x9sdDFWs4aP9WJpkGaLpTo5_kFCGWtuv8jNdEHKX6ImL2xvY/exec';
 
 let itens = [];
 let reservas = {};
