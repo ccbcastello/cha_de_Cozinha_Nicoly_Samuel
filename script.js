@@ -1,9 +1,154 @@
-// Kitchen Shower Registry with Automatic Google Sheets Integration
+// ===============================================================================================
+// INSTRUÇÕES PARA CONFIGURAR A INTEGRAÇÃO COM GOOGLE SHEETS
+// ===============================================================================================
+// Para que a lista de comidas funcione online, siga estes 5 passos:
+//
+// PASSO 1: CRIE UMA NOVA PLANILHA GOOGLE SHEETS
+//    1. Acesse sheets.google.com e crie uma nova planilha em branco.
+//    2. Na primeira linha, coloque os títulos das colunas. Na célula A1, escreva "Item". Na célula B1, escreva "Reservado por".
+//    3. A partir da célula A2 para baixo, liste todos os itens de comida e bebida que você quer na sua festa.
+//    4. Anote o ID da sua planilha. Ele está na URL. Ex: docs.google.com/spreadsheets/d/ID_DA_PLANILHA/edit
+//
+// PASSO 2: CRIE O GOOGLE APPS SCRIPT
+//    1. Na sua planilha, vá em "Extensões" > "Apps Script". Uma nova aba com um editor de código se abrirá.
+//    2. Apague todo o código que estiver no arquivo `Code.gs`.
+//    3. Copie TODO o código da caixa "CÓDIGO DO GOOGLE APPS SCRIPT" abaixo e cole no editor do Apps Script.
+//    4. Encontre a linha `const SPREADSHEET_ID = "COLOQUE_O_ID_DA_SUA_PLANILHA_AQUI";` e substitua pelo ID que você anotou no Passo 1.
+//
+// PASSO 3: PUBLIQUE O SCRIPT COMO UM APLICATIVO WEB
+//    1. No editor do Apps Script, clique no botão "Implantar" (canto superior direito) e depois em "Nova implantação".
+//    2. Clique no ícone de engrenagem ao lado de "Selecione o tipo" e escolha "App da Web".
+//    3. No campo "Descrição", coloque algo como "Lista de Comidas da Festa".
+//    4. Em "Executar como", deixe "Eu (seu e-mail)".
+//    5. Em "Quem pode acessar", selecione "Qualquer pessoa". ISSO É MUITO IMPORTANTE para que a página funcione.
+//    6. Clique em "Implantar".
+//
+// PASSO 4: AUTORIZE A EXECUÇÃO
+//    1. O Google pedirá autorização. Clique em "Autorizar acesso".
+//    2. Escolha sua conta do Google.
+//    3. Você pode ver um aviso de "App não verificado". Clique em "Avançado" e depois em "Acessar (nome do seu projeto) (não seguro)". É seguro, pois o código foi feito por você.
+//    4. Permita as permissões que o script solicita.
+//
+// PASSO 5: USE A URL GERADA
+//    1. Após a implantação, uma janela aparecerá com a "URL do app da Web". Clique em "Copiar".
+//    2. Volte para este arquivo (script.js) e cole a URL copiada na constante `WEB_APP_URL` abaixo, substituindo o texto de exemplo.
+//
+// Pronto! Sua lista de comidas agora está conectada à sua planilha.
+// -----------------------------------------------------------------------------------------------
+
+/*
+// ===============================================================================================
+// CÓDIGO DO GOOGLE APPS SCRIPT (Para ser colado no arquivo Code.gs - Passo 2)
+// ===============================================================================================
+//
+// // ID da sua planilha
+// const SPREADSHEET_ID = "COLOQUE_O_ID_DA_SUA_PLANILHA_AQUI"; 
+// // Nome da página/aba da sua planilha (geralmente é 'Página1' ou 'Sheet1')
+// const SHEET_NAME = "Página1"; 
+// 
+// // Função principal para requisições GET (carregar dados)
+// function doGet(e) {
+//   try {
+//     const sheet = SpreadsheetApp.openById(SPREADSHEET_ID).getSheetByName(SHEET_NAME);
+//     const data = sheet.getDataRange().getValues();
+//     
+//     const response = {
+//       success: true,
+//       data: data
+//     };
+//     
+//     // Retornar como JSONP para evitar problemas de CORS
+//     return ContentService
+//       .createTextOutput(e.parameter.callback + '(' + JSON.stringify(response) + ')')
+//       .setMimeType(ContentService.MimeType.JAVASCRIPT);
+//       
+//   } catch (error) {
+//     const response = {
+//       success: false,
+//       error: error.message
+//     };
+//     
+//     return ContentService
+//       .createTextOutput(e.parameter.callback + '(' + JSON.stringify(response) + ')')
+//       .setMimeType(ContentService.MimeType.JAVASCRIPT);
+//   }
+// }
+// 
+// // Função principal para requisições POST (reservar/cancelar)
+// function doPost(e) {
+//   try {
+//     const action = e.parameter.action;
+//     const itemName = e.parameter.itemName;
+//     
+//     if (!action || !itemName) {
+//       throw new Error("Ação ou nome do item não especificado.");
+//     }
+// 
+//     const lock = LockService.getScriptLock();
+//     lock.waitLock(15000); // Esperar até 15 segundos pelo bloqueio para evitar que duas pessoas reservem ao mesmo tempo
+// 
+//     let resultMessage = '';
+// 
+//     try {
+//         const sheet = SpreadsheetApp.openById(SPREADSHEET_ID).getSheetByName(SHEET_NAME);
+//         const data = sheet.getDataRange().getValues();
+//         let itemRow = -1;
+// 
+//         // Encontra a linha correspondente ao item
+//         for (let i = 0; i < data.length; i++) {
+//             if (data[i][0] === itemName) {
+//                 itemRow = i + 1; // Linhas da planilha começam em 1
+//                 break;
+//             }
+//         }
+//         
+//         if (itemRow === -1) {
+//           throw new Error("Item não encontrado na lista: " + itemName);
+//         }
+// 
+//         if (action === 'reserve') {
+//             const reservedBy = e.parameter.reservedBy;
+//             if (!reservedBy) {
+//               throw new Error("Nome da pessoa para reserva não foi fornecido.");
+//             }
+//             // Verifica se a célula de reserva já está preenchida
+//             if (sheet.getRange(itemRow, 2).getValue() !== '') {
+//                 throw new Error("Este item já foi reservado por outra pessoa.");
+//             }
+//             sheet.getRange(itemRow, 2).setValue(reservedBy);
+//             resultMessage = 'Item reservado com sucesso!';
+// 
+//         } else if (action === 'cancel') {
+//             sheet.getRange(itemRow, 2).setValue('');
+//             resultMessage = 'Reserva cancelada com sucesso!';
+//         } else {
+//             throw new Error("Ação inválida.");
+//         }
+//     } finally {
+//         lock.releaseLock();
+//     }
+// 
+//     // Retorna uma resposta HTML com um script que se comunica com a página principal
+//     const response = { success: true, message: resultMessage, type: 'reservationComplete' };
+//     return ContentService.createTextOutput(
+//       `<script>window.parent.postMessage(${JSON.stringify(response)}, '*');</script>`
+//     ).setMimeType(ContentService.MimeType.HTML);
+// 
+//   } catch (error) {
+//     // Retorna uma mensagem de erro para a página
+//     const response = { success: false, error: error.message, type: 'reservationComplete' };
+//     return ContentService.createTextOutput(
+//       `<script>window.parent.postMessage(${JSON.stringify(response)}, '*');</script>`
+//     ).setMimeType(ContentService.MimeType.HTML);
+//   }
+// }
+//
+*/
+
 // Main JavaScript file
 
-// Configuração fixa - URL do Google Apps Script Web App
-// TODO: Substitua pela URL do seu novo Web App do Google Apps Script para a lista de comidas
-const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycby5DnlB0O6QUNy-9RW4x9sdDFWs4aP9WJpkGaLpTo5_kFCGWtuv8jNdEHKX6ImL2xvY/exec';
+// PASSO 5: COLE A URL DO SEU APLICATIVO WEB AQUI
+const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzcciwVd0zArOxAF2BWTZfrCRnbsefSj-QIJNFNR5hdWYChW3sPbLHSeeEkE-uxAoXc/exec';
 
 let itens = [];
 let reservas = {};
@@ -12,11 +157,18 @@ let reservas = {};
 async function carregarDados() {
     mostrarLoading();
     
+    if (!WEB_APP_URL || WEB_APP_URL === 'COLOQUE_A_URL_DO_SEU_WEB_APP_AQUI') {
+        console.warn("URL do Web App não configurada. Carregando lista de exemplo.");
+        carregarListaPadrao();
+        esconderLoading();
+        return;
+    }
+
     try {
         // Usar JSONP para evitar CORS
         await carregarDadosJSONP();
     } catch (error) {
-        console.error('Erro ao carregar dados:', error);
+        console.error('Erro ao carregar dados da planilha. Carregando lista de exemplo.', error);
         carregarListaPadrao();
     } finally {
         esconderLoading();
@@ -39,26 +191,27 @@ function carregarDadosJSONP() {
                 itens = [];
                 reservas = {};
                 
-                data.data.forEach((row, index) => {
-                    console.log(`Processando linha ${index + 1}:`, row);
-                    
+                // Ignora a primeira linha (cabeçalho)
+                const sheetData = data.data.slice(1);
+
+                sheetData.forEach((row, index) => {
                     if (!Array.isArray(row) || row.length === 0) {
                         return; // Pula linhas nulas/vazias
                     }
                     const itemNome = row[0]; // Coluna A - Item
                     const reserva = row[1];  // Coluna B - Reserva
                     
-                    if (itemNome && itemNome !== 'Item') {
+                    if (itemNome) { // Processa apenas se o nome do item existir
                         try {
                             itens.push({
                                 nome: itemNome,
                                 icone: obterIcone(itemNome)
                             });
                         } catch (e) {
-                            console.error(`Falha ao obter ícone para item: ${itemNome} na linha ${index + 1}`, e);
+                            console.error(`Falha ao obter ícone para item: ${itemNome} na linha ${index + 2}`, e);
                         }
                         
-                        if (reserva && reserva !== 'Reserva') {
+                        if (reserva) {
                             reservas[itemNome] = reserva;
                         }
                     }
@@ -75,7 +228,7 @@ function carregarDadosJSONP() {
         script.onerror = function() {
             document.body.removeChild(script);
             delete window[callbackName];
-            reject(new Error('Erro ao carregar dados da planilha'));
+            reject(new Error('Falha ao carregar script de dados. Verifique a URL do Web App e as permissões da planilha.'));
         };
         
         // Adicionar o script à página
@@ -202,10 +355,12 @@ function reservarItem(itemNome, nomePessoa) {
             // Verificar se a operação foi bem-sucedida
             if (event.data.success) {
                 // Recarregar a página para atualizar os dados
+                alert(`"${itemNome}" reservado com sucesso para ${nomePessoa}!\n\nA página será recarregada.`);
                 window.location.reload();
             } else {
                 // Mostrar mensagem de erro
                 alert('Erro ao processar a reserva: ' + (event.data.error || 'Erro desconhecido'));
+                window.location.reload(); // Recarrega para re-habilitar o botão
             }
         }
     };
@@ -221,7 +376,7 @@ function reservarItem(itemNome, nomePessoa) {
         }
         // Recarregar a página mesmo sem confirmação
         window.location.reload();
-    }, 5000);
+    }, 8000);
 }
 
 function cancelarReservaItem(itemNome) {
@@ -282,10 +437,12 @@ function cancelarReservaItem(itemNome) {
             // Verificar se a operação foi bem-sucedida
             if (event.data.success) {
                 // Recarregar a página para atualizar os dados
+                alert(`Reserva de "${itemNome}" cancelada!\n\nA página será recarregada.`);
                 window.location.reload();
             } else {
                 // Mostrar mensagem de erro
                 alert('Erro ao processar o cancelamento: ' + (event.data.error || 'Erro desconhecido'));
+                 window.location.reload();
             }
         }
     };
@@ -301,7 +458,7 @@ function cancelarReservaItem(itemNome) {
         }
         // Recarregar a página mesmo sem confirmação
         window.location.reload();
-    }, 5000);
+    }, 8000);
 }
 
 function obterIcone(itemNome) {
@@ -381,6 +538,11 @@ function atualizarLista() {
 
     listaContainer.innerHTML = '';
     
+    if (itens.length === 0) {
+        listaContainer.innerHTML = '<p style="text-align: center; grid-column: 1 / -1;">Nenhum item encontrado na planilha. Siga as instruções no arquivo script.js para configurar.</p>';
+        return;
+    }
+
     itens.forEach((item, index) => {
         const itemElemento = document.createElement('div');
         
@@ -410,7 +572,7 @@ function atualizarLista() {
                     Cancelar Reserva
                 </button>
             ` : `
-                <input type="text" id="nome-${index}" placeholder="Seu nome">
+                <input type="text" id="nome-${index}" placeholder="Seu nome" aria-label="Seu nome para reservar ${item.nome}">
                 <button onclick="reservar('${item.nome}', ${index})">
                     Reservar
                 </button>
@@ -427,11 +589,13 @@ function reservar(itemNome, index) {
     
     if (!nome) {
         alert("Digite seu nome para reservar.");
+        nomeInput.focus();
         return;
     }
     
     if (nome.length < 2) {
         alert("Digite um nome válido (pelo menos 2 caracteres).");
+        nomeInput.focus();
         return;
     }
     
@@ -440,12 +604,10 @@ function reservar(itemNome, index) {
     const originalText = button.textContent;
     button.textContent = 'Reservando...';
     button.disabled = true;
+    nomeInput.disabled = true;
     
     // Fazer a reserva
     reservarItem(itemNome, nome);
-    
-    // Mostrar mensagem de sucesso
-    alert(`"${itemNome}" reservado com sucesso para ${nome}!\n\nA página será recarregada em instantes...`);
 }
 
 function cancelarReserva(itemNome) {
@@ -455,15 +617,14 @@ function cancelarReserva(itemNome) {
     if (!confirmacao) return;
     
     const button = document.querySelector(`[data-item="${itemNome}"] .cancelar-btn`);
-    const originalText = button.textContent;
-    button.textContent = 'Cancelando...';
-    button.disabled = true;
+    if (button) {
+        const originalText = button.textContent;
+        button.textContent = 'Cancelando...';
+        button.disabled = true;
+    }
     
     // Cancelar a reserva
     cancelarReservaItem(itemNome);
-    
-    // Mostrar mensagem de sucesso
-    alert(`Reserva de "${itemNome}" cancelada!\n\nA página será recarregada em instantes...`);
 }
 
 // Inicialização
